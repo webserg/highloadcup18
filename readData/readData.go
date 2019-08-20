@@ -1,4 +1,4 @@
-package main
+package readData
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ type Accounts struct {
 	Accounts []Account `json:"accounts"`
 }
 
-// "Account smth smth"
+// " Account smth smth"
 type Account struct {
 	// id    int    `json:"id"`
 	Fname string `json:"fname"`
@@ -39,14 +39,14 @@ type Account struct {
 // 	finish string
 // }
 
-// our main function
-func main() {
+func ReadData() (*Accounts, error) {
 	// Open our jsonFile
 	// jsonFile, err := os.Open("/home/webserg/data/test_accounts_291218/data/data/accounts_1.json")
-	jsonFile, err := os.Open("./datatest.1.json")
+	jsonFile, err := os.Open("C:/Users/webse/go/src/github.com/webserg/highloadcup18/readData/datatest.1.json")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 	fmt.Println("Successfully Opened users.json")
 	// defer the closing of our jsonFile so that we can parse it later on
@@ -69,12 +69,12 @@ func main() {
 	// we iterate through every user within our users array and
 	// print out the user Type, their name, and their facebook url
 	// as just an example
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 2; i++ {
 		fmt.Println("fname: " + accounts.Accounts[i].Fname)
 		fmt.Println("sex: " + accounts.Accounts[i].Sex)
 		// fmt.Println(len(accounts.Accounts[i].interests))
 		// fmt.Println("User id: " + strconv.Itoa(accounts.Accounts[i].id))
 		//fmt.Println("premiun start: " + accounts.Accounts[i].premium.start)
 	}
-
+	return &accounts, nil
 }

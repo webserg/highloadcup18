@@ -1,73 +1,58 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
+	"os"
 
-	"github.com/gorilla/mux"
+	"github.com/webserg/highloadcup18/readData"
 )
 
-// "Person smth smth"
-type Person struct {
-	ID        string   `json:"id,omitempty"`
-	Firstname string   `json:"firstname,omitempty"`
-	Lastname  string   `json:"lastname,omitempty"`
-	Address   *Address `json:"address,omitempty"`
-}
-type Address struct {
-	City  string `json:"city,omitempty"`
-	State string `json:"state,omitempty"`
-}
+var accounts *readData.Accounts
 
-var people []Person
+func init(){
+	fmt.Println("init")
+	var err error
+	accounts, err = readData.ReadData()
+	check(err)
+	fmt.Println(accounts)
+}
 
 // our main function
 func main() {
-	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
-	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
-	people = append(people, Person{ID: "3", Firstname: "Francis", Lastname: "Sunday"})
-
-	router := mux.NewRouter()
-	router.HandleFunc("/people", GetPeople).Methods("GET")
-	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
-	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
-	router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8080", router))
-
+	// accounts, err := readData.ReadData()
+	http.HandleFunc("/shutdown", shutdown)
+	http.HandleFunc("/accounts/filter", filter)
+	http.ListenAndServe(":8080", nil)
 }
 
-func GetPeople(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(people)
+func shutdown(res http.ResponseWriter, req *http.Request) {
+	os.Exit(0)
 }
-func GetPerson(w http.ResponseWriter, r *http.Request) {
-	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
-	params := mux.Vars(r)
-	var p Person
-	for index, item := range people {
-		if item.ID == params["id"] {
-			p = people[index]
-			break
+
+func filter(res http.ResponseWriter, req *http.Request) {
+	fmt.Printf("%s \n", req.URL.Path)
+	if req.URL.Path != "/accounts/filter" {
+		http.NotFound(res, req)
+		return
+	}
+	params := [6]string{"sex", "email", "status", "fname", "sname", "phone"}
+	query := req.URL.Query()
+	for _, k := range params {
+		v, exists := query[k]
+		if exists {
+			fmt.Printf("%s -> %s\n", k, v[0])
+			switch k {
+			case "sex":
+				fmt.Println(v[0])
+				fmt.Println(accounts)
+			}
 		}
-		json.NewEncoder(w).Encode(p)
 	}
 }
-func CreatePerson(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var person Person
-	_ = json.NewDecoder(r.Body).Decode(&person)
-	person.ID = params["id"]
-	people = append(people, person)
-	json.NewEncoder(w).Encode(people)
-}
-func DeletePerson(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var p Person
-	for index, item := range people {
-		if item.ID == params["id"] {
-			p = people[index]
-			break
-		}
-		json.NewEncoder(w).Encode(p)
+
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
 }
