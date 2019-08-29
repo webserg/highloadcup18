@@ -5,6 +5,18 @@
             "email": "gaosduntyhihatesme@inbox.com",
             "sex": "m"
            
+        },
+        {
+            "fname": "maria",
+            "email": "maria@inbox.com",
+            "sex": "f"
+           
+        },
+        {
+            "fname": "bob",
+            "email": "bob@x.org",
+            "sex": "m"
+           
         }
     ]
 }
