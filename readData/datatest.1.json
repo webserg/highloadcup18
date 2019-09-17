@@ -3,20 +3,22 @@
         {
             "fname": "serg",
             "email": "gaosduntyhihatesme@inbox.com",
-            "sex": "m"
+            "sex": "m",
+            "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
            
         },
         {
             "fname": "maria",
             "email": "maria@inbox.com",
-            "sex": "f"
+            "sex": "f",
+            "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
            
         },
         {
             "fname": "bob",
             "email": "bob@x.org",
-            "sex": "m"
-           
+            "sex": "m",
+            "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
         }
     ]
 }

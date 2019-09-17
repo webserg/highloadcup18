@@ -18,7 +18,7 @@ type Account struct {
 	Fname string `json:"fname"`
 	Email string `json:"email"`
 	// interests []string
-	// status    string
+	Status string
 	// premium   *Premium
 	Sex string `json:"sex"`
 	// phone     string
@@ -39,10 +39,11 @@ type Account struct {
 // 	finish string
 // }
 
-func ReadData() (*Accounts, error) {
+/*ReadFile return byte array with data*/
+func ReadFile(filaName string) ([]byte, error) {
 	// Open our jsonFile
 	// jsonFile, err := os.Open("/home/webserg/data/test_accounts_291218/data/data/accounts_1.json")
-	jsonFile, err := os.Open("C:/Users/webse/go/src/github.com/webserg/highloadcup18/readData/datatest.1.json")
+	jsonFile, err := os.Open(filaName)
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		log.Fatal(err)
@@ -52,29 +53,23 @@ func ReadData() (*Accounts, error) {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 	// read our opened xmlFile as a byte array.
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	return byteValue, err
+}
+
+/*ReadData read json data to array*/
+func ReadData(byteValue []byte) (*Accounts, error) {
 
 	// we initialize our Users array
 	var accounts Accounts
 
 	// we unmarshal our byteArray which contains our
 	// jsonFile's content into 'users' which we defined above
-	err = json.Unmarshal(byteValue, &accounts)
+	err := json.Unmarshal(byteValue, &accounts)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(len(accounts.Accounts))
-	fmt.Println(accounts.Accounts[0])
-	//fmt.Println(accounts.Accounts)
-	// we iterate through every user within our users array and
-	// print out the user Type, their name, and their facebook url
-	// as just an example
-	for i := 0; i < 2; i++ {
-		fmt.Println("fname: " + accounts.Accounts[i].Fname)
-		fmt.Println("sex: " + accounts.Accounts[i].Sex)
-		// fmt.Println(len(accounts.Accounts[i].interests))
-		// fmt.Println("User id: " + strconv.Itoa(accounts.Accounts[i].id))
-		//fmt.Println("premiun start: " + accounts.Accounts[i].premium.start)
-	}
+
 	return &accounts, nil
 }

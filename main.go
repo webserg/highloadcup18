@@ -16,8 +16,9 @@ var accounts *d.Accounts
 
 func init() {
 	fmt.Println("init")
-	var err error
-	accounts, err = d.ReadData()
+	byteValue, err := d.ReadFile("C:/Users/webse/go/src/github.com/webserg/highloadcup18/readData/datatest.1.json")
+	check(err)
+	accounts, err = d.ReadData(byteValue)
 	check(err)
 	fmt.Println(accounts)
 }
@@ -41,42 +42,74 @@ func filterService(res http.ResponseWriter, req *http.Request) {
 		log.Panic("path not found")
 		return
 	}
-	params := [6]string{"sex_eq", "email_domain", "status", "fname", "sname", "phone"}
+	params := []string{"sex_eq", "email_domain", "email_lt", "email_gt", "status_eq", "status_neq", "fname_eq", "fname_any", "fname_null", "sname", "phone"}
 	query := req.URL.Query()
 	log.Println(query)
 	log.Println(len(query))
-	testArray := make([]func(d.Account) bool, 0)
+	filtersArray := make([]func(d.Account) bool, 0)
 	for _, k := range params {
 		v, exists := query[k]
 		if exists {
 			filterValue := v[0]
+			log.Println(k + "=" + filterValue)
 			switch k {
 
 			case "sex_eq":
-				log.Println(k + "=" + filterValue)
-				testArray = append(testArray, func(s d.Account) bool { return s.Sex == filterValue })
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Sex == filterValue })
 
 			case "email_domain":
-				log.Println(k + "=" + filterValue)
-				testArray = append(testArray, func(s d.Account) bool { return strings.HasSuffix(s.Email, filterValue) })
+				filtersArray = append(filtersArray, func(s d.Account) bool { return strings.HasSuffix(s.Email, filterValue) })
 
+			case "email_lt":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Email < filterValue })
+
+			case "email_gt":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Email > filterValue })
+
+			case "status_eq":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Status == filterValue })
+
+			case "status_neq":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Status != filterValue })
+
+			case "fname_eq":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Fname == filterValue })
+
+			case "fname_null":
+				if filterValue != "0" && filterValue != "1" {
+					res.WriteHeader(http.StatusBadRequest)
+					log.Panic("fname_null(0,1) doesn't have parameter " + filterValue)
+					return
+				}
+				filtersArray = append(filtersArray, func(s d.Account) bool {
+					if filterValue == "1" {
+						return s.Fname == ""
+					}
+					return len(s.Fname) > 0
+
+				})
 			}
 		}
 	}
-	S2 := filter2(testArray)
-	fmt.Println(S2)
-	json.NewEncoder(res).Encode(S2)
+	finalArray := filter2(filtersArray)
+	fmt.Println(finalArray)
+	if len(finalArray) == 0 {
+		res.WriteHeader(http.StatusNotFound)
+		log.Println("nothing is found")
+		return
+	}
+	json.NewEncoder(res).Encode(d.Accounts{Accounts: finalArray})
 }
 
-func filter2(testArray []func(d.Account) bool) (ret []d.Account) {
-	if len(testArray) > 0 {
-		log.Println(testArray)
+func filter2(filtersArray []func(d.Account) bool) (ret []d.Account) {
+	if len(filtersArray) > 0 {
+		log.Println(filtersArray)
 		for _, s := range accounts.Accounts {
 			log.Println(s)
 			res := true
-			for _, test := range testArray {
+			for _, filter := range filtersArray {
 				log.Println(s)
-				if !test(s) {
+				if !filter(s) {
 					res = false
 					break
 				}
@@ -96,7 +129,7 @@ func check(e error) {
 	}
 }
 
-func checkHttp(res http.ResponseWriter, req *http.Request, e error) {
+func checkHTTP(res http.ResponseWriter, req *http.Request, e error) {
 	if e != nil {
 		log.Panic("error")
 		http.Error(res, "error", -1)
