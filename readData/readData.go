@@ -16,6 +16,7 @@ type Accounts struct {
 type Account struct {
 	// id    int    `json:"id"`
 	Fname string `json:"fname"`
+	Sname string `json:"sname"`
 	Email string `json:"email"`
 	// interests []string
 	Status string

@@ -2,6 +2,7 @@
     "accounts": [
         {
             "fname": "serg",
+            "sname": "Данашевен",
             "email": "gaosduntyhihatesme@inbox.com",
             "sex": "m",
             "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
@@ -9,6 +10,7 @@
         },
         {
             "fname": "maria",
+            "sname": "Стаметаный",
             "email": "maria@inbox.com",
             "sex": "f",
             "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
@@ -16,7 +18,16 @@
         },
         {
             "fname": "bob",
+            "sname": "Стаметаный",
             "email": "bob@x.org",
+            "sex": "m",
+            "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
+        }
+        ,
+        {
+            "fname": "bob",
+            "sname": "jackson",
+            "email": "bob@jackson.org",
             "sex": "m",
             "status": "\u0432\u0441\u0451 \u0441\u043b\u043e\u0436\u043d\u043e"
         }

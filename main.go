@@ -42,7 +42,7 @@ func filterService(res http.ResponseWriter, req *http.Request) {
 		log.Panic("path not found")
 		return
 	}
-	params := []string{"sex_eq", "email_domain", "email_lt", "email_gt", "status_eq", "status_neq", "fname_eq", "fname_any", "fname_null", "sname", "phone"}
+	params := []string{"sex_eq", "email_domain", "email_lt", "email_gt", "status_eq", "status_neq", "fname_eq", "fname_any", "fname_null", "sname_eq"}
 	query := req.URL.Query()
 	log.Println(query)
 	log.Println(len(query))
@@ -74,6 +74,14 @@ func filterService(res http.ResponseWriter, req *http.Request) {
 
 			case "fname_eq":
 				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Fname == filterValue })
+			
+			case "sname_eq":
+				filtersArray = append(filtersArray, func(s d.Account) bool { return s.Sname == filterValue })
+
+
+			case "fname_any":
+				names := strings.Split(filterValue,",")
+				filtersArray = append(filtersArray, func(s d.Account) bool { return index(names, s.Fname)!=-1 })
 
 			case "fname_null":
 				if filterValue != "0" && filterValue != "1" {
@@ -122,9 +130,18 @@ func filter2(filtersArray []func(d.Account) bool) (ret []d.Account) {
 	return
 }
 
+func index(vs []string, t string) int {
+    for i, v := range vs {
+        if v == t {
+            return i
+        }
+    }
+    return -1
+}
+
 func check(e error) {
 	if e != nil {
-		log.Panic("error")
+		log.Panic(e)
 		panic(e)
 	}
 }

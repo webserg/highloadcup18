@@ -35,6 +35,34 @@ func TestGetFnameEq(t *testing.T) {
 	t.Logf("%s", accounts.Accounts)
 }
 
+func TestGetFnameAny(t *testing.T) {
+	res, _ := http.Get("http://localhost:8080/accounts/filter?fname_any=maria,vlad,olav")
+	byteValue, _ := ioutil.ReadAll(res.Body)
+	accounts, err := d.ReadData(byteValue)
+	check(err)
+	t.Log(accounts)
+	if len(accounts.Accounts) != 1 {
+		t.Errorf("Len was incorrect, got: %d, want: %d.", len(accounts.Accounts), 1)
+	}
+	res.Body.Close()
+	t.Log("body")
+	t.Logf("%s", accounts.Accounts)
+}
+
+func TestGetFnameAnyFalse(t *testing.T) {
+	res, _ := http.Get("http://localhost:8080/accounts/filter?fname_any=vsevolod,vlad,olav")
+	byteValue, _ := ioutil.ReadAll(res.Body)
+	accounts, err := d.ReadData(byteValue)
+	check(err)
+	t.Log(accounts)
+	if len(accounts.Accounts) != 0 {
+		t.Errorf("Len was incorrect, got: %d, want: %d.", len(accounts.Accounts), 1)
+	}
+	res.Body.Close()
+	t.Log("body")
+	t.Logf("%s", accounts.Accounts)
+}
+
 func TestGetSexEqM(t *testing.T) {
 	res, _ := http.Get("http://localhost:8080/accounts/filter?sex_eq=m")
 	byteValue, _ := ioutil.ReadAll(res.Body)
@@ -42,6 +70,30 @@ func TestGetSexEqM(t *testing.T) {
 	check(err)
 	if len(accounts.Accounts) != 2 {
 		t.Errorf("Len was incorrect, got: %d, want: %d.", len(accounts.Accounts), 2)
+	}
+	res.Body.Close()
+	t.Logf("%s", accounts.Accounts)
+}
+
+func TestGetSnameEq(t *testing.T) {
+	res, _ := http.Get("http://localhost:8080/accounts/filter?sname_eq=Стаметаный")
+	byteValue, _ := ioutil.ReadAll(res.Body)
+	accounts, err := d.ReadData(byteValue)
+	check(err)
+	if len(accounts.Accounts) != 2 {
+		t.Errorf("Len was incorrect, got: %d, want: %d.", len(accounts.Accounts), 2)
+	}
+	res.Body.Close()
+	t.Logf("%s", accounts.Accounts)
+}
+
+func TestGetSnameEq2(t *testing.T) {
+	res, _ := http.Get("http://localhost:8080/accounts/filter?sname_eq=jackson")
+	byteValue, _ := ioutil.ReadAll(res.Body)
+	accounts, err := d.ReadData(byteValue)
+	check(err)
+	if len(accounts.Accounts) != 1 {
+		t.Errorf("Len was incorrect, got: %d, want: %d.", len(accounts.Accounts), 1)
 	}
 	res.Body.Close()
 	t.Logf("%s", accounts.Accounts)
